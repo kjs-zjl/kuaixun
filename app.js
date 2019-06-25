@@ -5,17 +5,26 @@ var fs = require('fs');
 var prettyjson = require('prettyjson');
 var multer = require('multer');
 var app = express();
+var proxy = require('http-proxy-middleware');
 
 app.use(express.static('./'));
 app.use(express.static('node_modules'));
 
+app.use('/api/*', proxy({
+  target: 'https://www.hjkuaixun.com/api', //代理域名或ip 
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api': ''
+  }
+}))
+
 app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, AppKey, Nonce, CurTime, CheckSum');
-    // res.header('Access-Control-Max-Age', 604800);
-    res.header('Access-Control-Allow-Credentials', true);
-    next();
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, AppKey, Nonce, CurTime, CheckSum');
+  // res.header('Access-Control-Max-Age', 604800);
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
 });
 
 // app.use(function (req, res, next) {
@@ -23,7 +32,7 @@ app.use(function (req, res, next) {
 // })
 
 app.get('timeout', function (req, res) {
-    console.log('timeout');
+  console.log('timeout');
 });
 
 var options = {
@@ -42,20 +51,20 @@ httpsServer.listen(7182, function () {
 });
 
 function logAddress(server, type) {
-    var address = server.address();
-    address = type + '://localhost:' + address.port;
-    // console.log('vcloud');
-    // console.log(address + '/webdemo/vcloud/room.html?type=edu&roomid=36168');
-    log();
+  var address = server.address();
+  address = type + '://localhost:' + address.port;
+  // console.log('vcloud');
+  // console.log(address + '/webdemo/vcloud/room.html?type=edu&roomid=36168');
+  log();
 }
 
 function log(obj) {
-    if (!obj) return
-    if (typeof obj === 'string') {
-        if (obj.length > 100) {
-            return;
-        }
-        obj = [obj];
+  if (!obj) return
+  if (typeof obj === 'string') {
+    if (obj.length > 100) {
+      return;
     }
-    console.log(prettyjson.render(obj));
+    obj = [obj];
+  }
+  console.log(prettyjson.render(obj));
 }
