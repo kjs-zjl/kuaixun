@@ -4,7 +4,7 @@
 
 'use strict';
 
-YX.fn.message = function() {
+YX.fn.message = function () {
   this.$sendBtn = $('#sendBtn');
   this.$messageText = $('#messageText');
   this.$chooseFileBtn = $('#chooseFileBtn');
@@ -40,7 +40,7 @@ YX.fn.message = function() {
   //聊天面板右键菜单
   $.contextMenu({
     selector: '.j-msg',
-    callback: function(key, options) {
+    callback: function (key, options) {
       if (key === 'delete') {
         var id = options.$trigger.parent().data('id');
         var msg = this.cache.findMsg(this.crtSession, id);
@@ -60,7 +60,7 @@ YX.fn.message = function() {
         options.$trigger.removeClass('j-msg');
         this.nim.deleteMsg({
           msg: msg,
-          done: function(err) {
+          done: function (err) {
             options.$trigger.addClass('j-msg');
             if (err) {
               if (err.code === 508) {
@@ -89,19 +89,20 @@ YX.fn.message = function() {
   //表情贴图模块
   this.initEmoji();
 };
+
 /**
  * 处理收到的消息
  * @param  {Object} msg
  * @return
  */
-YX.fn.doMsg = function(msg) {
+YX.fn.doMsg = function (msg) {
   var that = this,
     who = msg.to === userUID ? msg.from : msg.to,
-    updateContentUI = function() {
+    updateContentUI = function () {
       //如果当前消息对象的会话面板打开
       if (that.crtSessionAccount === who) {
         that.sendMsgRead(who, msg.scene);
-        that.cache.dealTeamMsgReceipts(msg, function() {
+        that.cache.dealTeamMsgReceipts(msg, function () {
           var msgHtml = appUI.updateChatContentUI(msg, that.cache);
           that.$chatContent.find('.no-msg').remove();
           that.$chatContent.append(msgHtml).scrollTop(99999);
@@ -114,7 +115,7 @@ YX.fn.doMsg = function(msg) {
     var account = msg.scene === 'p2p' ? who : msg.from;
     //用户信息本地没有缓存，需存储
     if (!this.cache.getUserById(account)) {
-      this.mysdk.getUser(account, function(err, data) {
+      this.mysdk.getUser(account, function (err, data) {
         if (!err) {
           that.cache.updatePersonlist(data);
           updateContentUI();
@@ -132,7 +133,7 @@ YX.fn.doMsg = function(msg) {
 /*****************************************************************
  * emoji模块
  ****************************************************************/
-YX.fn.initEmoji = function() {
+YX.fn.initEmoji = function () {
   this.$showEmoji = $('#showEmoji');
   this.$showEmoji.on('click', this.showEmoji.bind(this));
   var that = this,
@@ -142,7 +143,7 @@ YX.fn.initEmoji = function() {
       width: 500,
       height: 300,
       imgpath: './images/',
-      callback: function(result) {
+      callback: function (result) {
         that.cbShowEmoji(result);
       }
     };
@@ -153,7 +154,7 @@ YX.fn.initEmoji = function() {
  * 选择表情回调
  * @param  {objcet} result 点击表情/贴图返回的数据
  */
-YX.fn.cbShowEmoji = function(result) {
+YX.fn.cbShowEmoji = function (result) {
   if (!!result) {
     var scene = this.crtSessionType,
       to = this.crtSessionAccount;
@@ -180,14 +181,14 @@ YX.fn.cbShowEmoji = function(result) {
   }
 };
 
-YX.fn.showEmoji = function() {
+YX.fn.showEmoji = function () {
   this.$emNode._$show();
 };
 /*************************************************************************
  * 发送消息逻辑
  *
  ************************************************************************/
-YX.fn.uploadFile = function() {
+YX.fn.uploadFile = function () {
   var that = this,
     scene = this.crtSessionType,
     to = this.crtSessionAccount,
@@ -199,11 +200,11 @@ YX.fn.uploadFile = function() {
   this.mysdk.sendFileMessage(scene, to, fileInput, this.sendMsgDone.bind(this));
 };
 
-YX.fn.chooseFile = function() {
+YX.fn.chooseFile = function () {
   this.$fileInput.click();
 };
 
-YX.fn.sendTextMessage = function() {
+YX.fn.sendTextMessage = function () {
   var self = this
   if (self.$toRecord.hasClass('recording') || self.$toRecord.hasClass('recorded')) {
     if (YX.fn.recordTime < 2) {
@@ -268,16 +269,16 @@ YX.fn.sendTextMessage = function() {
   }
 };
 
-YX.fn.sendRecordAudio = function() {
+YX.fn.sendRecordAudio = function () {
   var self = this
-  YX.fn.recorder.exportWAV(function(blob) {
+  YX.fn.recorder.exportWAV(function (blob) {
     self.$toRecord.addClass('uploading');
     self.nim.sendFile({
       scene: self.crtSessionType,
       to: self.crtSessionAccount,
       type: 'audio',
       blob: blob,
-      uploadprogress: function(obj) {
+      uploadprogress: function (obj) {
         console.log('文件总大小: ' + obj.total + 'bytes');
         console.log('已经上传的大小: ' + obj.loaded + 'bytes');
         console.log('上传进度: ' + obj.percentage);
@@ -297,7 +298,7 @@ YX.fn.stopRecordAndAudio = function () {
   YX.fn.stopRecordAudio()
   YX.fn.stopPlayAudio()
 }
-YX.fn.recordAudio = function() {
+YX.fn.recordAudio = function () {
   YX.fn.stopPlayAudio()
   var self = this
   if (location.protocol === 'http:') {
@@ -316,7 +317,7 @@ YX.fn.recordAudio = function() {
     } else {
       Recorder.mediaDevices.getUserMedia({
         audio: true
-      }).then(function(stream) {
+      }).then(function (stream) {
         var input = self.audioContext.createMediaStreamSource(stream);
         YX.fn.recorder = new Recorder(input);
         YX.fn.recorder.record();
@@ -329,7 +330,7 @@ YX.fn.recordAudio = function() {
         } else {
           self.showRecorderTime()
         }
-      }).catch(function(err) {
+      }).catch(function (err) {
         alert('您没有可用的麦克风输入设备')
         self.$toRecord.addClass('disabled')
         console.log('No live audio input: ' + err, err.name + ": " + err.message);
@@ -356,7 +357,7 @@ YX.fn.recordTimeRun = function () {
   }
   self.$recordTimeDuration.html('00:' + (YX.fn.recordTime > 9 ? YX.fn.recordTime : '0' + YX.fn.recordTime))
 }
-YX.fn.stopRecordAudio = function() {
+YX.fn.stopRecordAudio = function () {
   var $toRecord = $('#toRecord')
   var isRecording = $toRecord.hasClass('recording');
   if (isRecording) {
@@ -390,7 +391,7 @@ YX.fn.cancelRecordAudio = function () {
  * @param error：消息发送失败的原因
  * @param msg：消息主体，类型分为文本、文件、图片、地理位置、语音、视频、自定义消息，通知等
  */
-YX.fn.sendMsgDone = function(error, msg) {
+YX.fn.sendMsgDone = function (error, msg) {
   if (error && error.code === 7101) {
     alert('被拉黑');
     msg.blacked = true;
@@ -400,7 +401,7 @@ YX.fn.sendMsgDone = function(error, msg) {
     this.$messageText.val('');
   }
   this.$chatContent.find('.no-msg').remove();
-  this.cache.dealTeamMsgReceipts(msg, function() {
+  this.cache.dealTeamMsgReceipts(msg, function () {
     var msgHtml = appUI.updateChatContentUI(msg, this.cache);
     this.$chatContent.append(msgHtml).scrollTop(99999);
     $('#uploadForm')
@@ -409,7 +410,7 @@ YX.fn.sendMsgDone = function(error, msg) {
   }.bind(this))
 };
 
-YX.fn.inputMessage = function(e) {
+YX.fn.inputMessage = function (e) {
   var ev = e || window.event;
   if ($.trim(this.$messageText.val()).length > 0) {
     if (ev.keyCode === 13 && ev.ctrlKey) {
@@ -420,7 +421,7 @@ YX.fn.inputMessage = function(e) {
   }
 };
 // 重发
-YX.fn.doResend = function(evt) {
+YX.fn.doResend = function (evt) {
   var $node;
   if (evt.target.tagName.toLowerCase() === 'span') {
     $node = $(evt.target);
@@ -432,7 +433,7 @@ YX.fn.doResend = function(evt) {
   var msg = this.cache.findMsg(sessionId, idClient);
   this.mysdk.resendMsg(
     msg,
-    function(err, data) {
+    function (err, data) {
       if (err) {
         alert(err.message || '发送失败');
       } else {
@@ -450,7 +451,7 @@ YX.fn.doResend = function(evt) {
  * 获取当前会话消息
  * @return {void}
  *************************************************************/
-YX.fn.getHistoryMsgs = function(scene, account) {
+YX.fn.getHistoryMsgs = function (scene, account) {
   var id = scene + '-' + account;
   var sessions = this.cache.findSession(id);
   var msgs = this.cache.getMsgs(id);
@@ -471,8 +472,8 @@ YX.fn.getHistoryMsgs = function(scene, account) {
   this.doChatUI(id);
 };
 //拿到历史消息后聊天面板UI呈现
-YX.fn.doChatUI = function(id) {
-  this.cache.dealTeamMsgReceipts(id, function() {
+YX.fn.doChatUI = function (id) {
+  this.cache.dealTeamMsgReceipts(id, function () {
     var temp = appUI.buildChatContentUI(id, this.cache);
     this.$chatContent.html(temp);
     this.$chatContent.scrollTop(9999);
@@ -481,14 +482,14 @@ YX.fn.doChatUI = function(id) {
   }.bind(this));
 };
 
-YX.fn.getLocalMsgsDone = function(err, data) {
+YX.fn.getLocalMsgsDone = function (err, data) {
   if (!err) {
     var reset = true
     this.cache.addMsgsByReverse(data.msgs, true);
     var id = data.sessionId;
     var array = getAllAccount(data.msgs);
     var that = this;
-    this.checkUserInfo(array, function() {
+    this.checkUserInfo(array, function () {
       that.doChatUI(id);
     });
   } else {
@@ -497,7 +498,7 @@ YX.fn.getLocalMsgsDone = function(err, data) {
 };
 
 //检查用户信息有木有本地缓存 没的话就去拿拿好后在执行回调
-YX.fn.checkUserInfo = function(array, callback) {
+YX.fn.checkUserInfo = function (array, callback) {
   var arr = [];
   var that = this;
   for (var i = array.length - 1; i >= 0; i--) {
@@ -506,7 +507,7 @@ YX.fn.checkUserInfo = function(array, callback) {
     }
   }
   if (arr.length > 0) {
-    this.mysdk.getUsers(arr, function(error, data) {
+    this.mysdk.getUsers(arr, function (error, data) {
       if (!error) {
         that.cache.setPersonlist(data);
         callback();
@@ -519,11 +520,11 @@ YX.fn.checkUserInfo = function(array, callback) {
   }
 };
 //发送已读回执
-YX.fn.sendMsgRead = function(account, scene) {
+YX.fn.sendMsgRead = function (account, scene) {
   if (scene === 'p2p') {
     var id = scene + '-' + account;
     var sessions = this.cache.findSession(id);
-    this.mysdk.sendMsgReceipt(sessions.lastMsg, function(err, data) {
+    this.mysdk.sendMsgReceipt(sessions.lastMsg, function (err, data) {
       if (err) {
         console.log(err);
       }
@@ -531,7 +532,7 @@ YX.fn.sendMsgRead = function(account, scene) {
   }
 };
 //UI上标记消息已读
-YX.fn.markMsgRead = function(id) {
+YX.fn.markMsgRead = function (id) {
   if (!id || this.crtSession !== id) {
     return;
   }
@@ -550,7 +551,7 @@ YX.fn.markMsgRead = function(id) {
   }
 };
 //撤回消息
-YX.fn.backoutMsg = function(id, data) {
+YX.fn.backoutMsg = function (id, data) {
   var msg = data ? data.msg : this.cache.findMsg(this.crtSession, id);
   var to = msg.target;
   var session = msg.sessionId;
@@ -575,7 +576,7 @@ YX.fn.backoutMsg = function(id, data) {
     to: to,
     tip: (userUID === opeAccount ? '你' : opeNick) + '撤回了一条消息',
     time: msg.time,
-    done: function(err, data) {
+    done: function (err, data) {
       if (!err) {
         this.cache.backoutMsg(session, id, data);
         if (this.crtSession === session) {
@@ -598,7 +599,7 @@ YX.fn.backoutMsg = function(id, data) {
  * @param {string} option.account 发送群视频的uid
  * @param {string} option.message tip消息
  */
-YX.fn.sendTeamNetCallTip = function(option) {
+YX.fn.sendTeamNetCallTip = function (option) {
   var tmpUser = this.cache.getTeamMemberInfo(option.account, option.teamId);
   option.nick = tmpUser.nickInTeam || getNick(option.account);
 
@@ -613,7 +614,7 @@ YX.fn.sendTeamNetCallTip = function(option) {
     isPushable: false,
     isHistoryable: false,
     isRoamingable: false,
-    done: function(err, data) {
+    done: function (err, data) {
       // err && console.log(err)
       // this.buildSessions();
       // var msgHtml = appUI.buildChatContentUI(this.crtSession, this.cache)
@@ -633,14 +634,14 @@ YX.fn.sendTeamNetCallTip = function(option) {
  * @param {string} option.teamId 群id
  * @param {string} option.channelName 房间id
  */
-YX.fn.sendCustomMessage = function(option) {
+YX.fn.sendCustomMessage = function (option) {
   var that = this;
   option.list = option.list || [];
 
   var tmpUser = this.cache.getTeamMemberInfo(option.caller, option.teamId);
   option.nick = tmpUser.nickInTeam || getNick(option.caller);
 
-  option.list.forEach(function(uid) {
+  option.list.forEach(function (uid) {
     // this.mysdk.sendCustomMessage('p2p', item, content, this.sendMsgDone.bind(this))
     that.nim.sendCustomSysMsg({
       scene: 'p2p',
@@ -656,7 +657,7 @@ YX.fn.sendCustomMessage = function(option) {
       isPushable: true,
       sendToOnlineUsersOnly: false,
       apnsText: option.nick + '正在呼叫您',
-      done: function(error, msg) {
+      done: function (error, msg) {
         console.log(msg);
       }
     });

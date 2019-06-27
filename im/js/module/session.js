@@ -47,27 +47,11 @@ YX.fn.buildSessions = function (id) {
     }.bind(this))
 }
 
-// 浏览器标题栏闪烁效果
-var flash = false
-// var flashTimer = ''
-var flashTitle = function () {
-    flash = !flash
-    if (flash) {
-        document.title = "★ ★ 收到新信息 ★ ★"
-    } else {
-        document.title = "快讯网页版"
-    }
-}
 // 导航上加未读数
 YX.fn.showUnread = function () {
     var counts = $("#sessions .panel_count")
     this.totalUnread = 0
     if (counts.length !== 0) {
-        // 如果有未读信息，则让浏览器标题栏闪烁，提醒用户有新信息
-        console.error('有未读信息')
-        window.flashTimer = setInterval(() => {
-            flashTitle()
-        }, 100);
         if (this.totalUnread !== "99+") {
             for (var i = counts.length - 1; i >= 0; i--) {
                 if ($(counts[i]).text() === "99+") {
@@ -77,10 +61,6 @@ YX.fn.showUnread = function () {
                 this.totalUnread += parseInt($(counts[i]).text(), 10)
             }
         }
-    } else {
-        console.error('没有未读信息', window.flashTimer)
-        document.title = "快讯网页版"
-        clearInterval(window.flashTimer)
     }
     var $node = $(".m-unread .u-unread")
     $node.text(this.totalUnread)

@@ -19,6 +19,11 @@
 </head>
 
 <body id="mainBody" class="hide">
+	<!-- 消息提醒语音 iframe标签是为了自动触发chrome的音频播放功能，src指向一个空的音频文件（详见书签栏） -->
+	<audio id="audioPlay">
+		<source src="./audio/msg.wav" type="audio/wav">
+	</audio>
+	<!-- <iframe allow="autoplay" style="display:none" src="./audio/emptyAudio.wav"></iframe> -->
 	<div class="bad-network hide tc radius5px" id="errorNetwork">已与服务器断开，请检查网络连接</div>
 	<div class="wrapper box-sizing">
 		<div class="content">
@@ -628,8 +633,8 @@
 	<script>
 		// 生产环境清除console.log()
 		if (true) {
-			// console.log = () => {}
-			// console.info = () => {}
+			console.log = () => {}
+			console.info = () => {}
 		}
 	</script>
 	<script>

@@ -247,7 +247,9 @@ fn.initEvent = function () {
     // 无可用设备时，鼠标hover音视频控制按钮，展示tooltip
     $(".netcall-box").tooltip({
         items: ".control-item.no-device",
-        classes: { "ui-tooltip": "ui-tooltip-netcall" },
+        classes: {
+            "ui-tooltip": "ui-tooltip-netcall"
+        },
         position: {
             my: "center bottom-14",
             at: "center top",
@@ -462,12 +464,12 @@ fn.initWebRTCEvent = function () {
         obj.node = this.$netcallBox.find('.netcall-meeting-box .item[data-account=' + obj.account + ']')[0]
         console.log('on remoteTrack', obj)
         if (obj.track && obj.track.kind === 'audio') {
-           that.setDeviceAudioOut(true);
+            that.setDeviceAudioOut(true);
         }
         if (obj.track && obj.track.kind === 'video') {
-          // 重新设置尺寸
-          this.startRemoteStream(obj)
-          this.updateVideoShowSize(true, true)
+            // 重新设置尺寸
+            this.startRemoteStream(obj)
+            this.updateVideoShowSize(true, true)
         }
     }.bind(this))
     webrtc.on('leaveChannel', function (obj) {
@@ -579,7 +581,7 @@ fn.initNetcallEvent = function () {
 
 fn.onControl = function (obj) {
     console.log("on control:", obj);
-    
+
     var netcall = this.netcall;
     // 如果不是当前通话的指令, 直接丢掉
     if (netcall.notCurrentChannelId(obj)) {
@@ -599,11 +601,11 @@ fn.onControl = function (obj) {
         case Netcall.NETCALL_CONTROL_COMMAND_NOTIFY_AUDIO_ON:
             this.log("对方打开了麦克风");
             break;
-        // NETCALL_CONTROL_COMMAND_NOTIFY_AUDIO_OFF 通知对方自己关闭了音频
+            // NETCALL_CONTROL_COMMAND_NOTIFY_AUDIO_OFF 通知对方自己关闭了音频
         case Netcall.NETCALL_CONTROL_COMMAND_NOTIFY_AUDIO_OFF:
             this.log("对方关闭了麦克风");
             break;
-        // NETCALL_CONTROL_COMMAND_NOTIFY_VIDEO_ON 通知对方自己打开了视频
+            // NETCALL_CONTROL_COMMAND_NOTIFY_VIDEO_ON 通知对方自己打开了视频
         case Netcall.NETCALL_CONTROL_COMMAND_NOTIFY_VIDEO_ON:
             this.log("对方打开了摄像头");
             this.$videoRemoteBox.toggleClass("empty", false).find(".message").text("");
@@ -618,7 +620,7 @@ fn.onControl = function (obj) {
             }
             this.updateVideoShowSize(true, true);
             break;
-        // NETCALL_CONTROL_COMMAND_NOTIFY_VIDEO_OFF 通知对方自己关闭了视频
+            // NETCALL_CONTROL_COMMAND_NOTIFY_VIDEO_OFF 通知对方自己关闭了视频
         case Netcall.NETCALL_CONTROL_COMMAND_NOTIFY_VIDEO_OFF:
             this.log("对方关闭了摄像头");
             this.$videoRemoteBox.toggleClass("empty", true).find(".message").text("对方关闭了摄像头");
@@ -631,12 +633,12 @@ fn.onControl = function (obj) {
                 this.stopRemoteStreamMeeting(obj.account);
             }
             break;
-        // NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_REJECT 拒绝从音频切换到视频
+            // NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_REJECT 拒绝从音频切换到视频
         case Netcall.NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_REJECT:
             this.log("对方拒绝从音频切换到视频通话");
             this.requestSwitchToVideoRejected();
             break;
-        // NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO 请求从音频切换到视频
+            // NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO 请求从音频切换到视频
         case Netcall.NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO:
             this.log("对方请求从音频切换到视频通话");
             if (this.requestSwitchToVideoWaiting) {
@@ -645,19 +647,19 @@ fn.onControl = function (obj) {
                 this.beingAskSwitchToVideo();
             }
             break;
-        // NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_AGREE 同意从音频切换到视频
+            // NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_AGREE 同意从音频切换到视频
         case Netcall.NETCALL_CONTROL_COMMAND_SWITCH_AUDIO_TO_VIDEO_AGREE:
             this.log("对方同意从音频切换到视频通话");
             if (this.requestSwitchToVideoWaiting) {
                 this.doSwitchToVideo();
             }
             break;
-        // NETCALL_CONTROL_COMMAND_SWITCH_VIDEO_TO_AUDIO 从视频切换到音频
+            // NETCALL_CONTROL_COMMAND_SWITCH_VIDEO_TO_AUDIO 从视频切换到音频
         case Netcall.NETCALL_CONTROL_COMMAND_SWITCH_VIDEO_TO_AUDIO:
             this.log("对方请求从视频切换为音频");
             this.doSwitchToAudio();
             break;
-        // NETCALL_CONTROL_COMMAND_BUSY 占线
+            // NETCALL_CONTROL_COMMAND_BUSY 占线
         case Netcall.NETCALL_CONTROL_COMMAND_BUSY:
             this.log("对方正在通话中");
             this.log("取消通话");
@@ -665,6 +667,7 @@ fn.onControl = function (obj) {
             this.clearCallTimer();
             this.isBusy = true;
             this.sendLocalMessage("对方正在通话中");
+
             function doEnd() {
                 this.cancelCalling();
             }
@@ -682,7 +685,7 @@ fn.onControl = function (obj) {
                 }.bind(this));
             }
             break;
-        // NETCALL_CONTROL_COMMAND_SELF_CAMERA_INVALID 自己的摄像头不可用
+            // NETCALL_CONTROL_COMMAND_SELF_CAMERA_INVALID 自己的摄像头不可用
         case Netcall.NETCALL_CONTROL_COMMAND_SELF_CAMERA_INVALID:
             this.log("对方摄像头不可用");
             this.$videoRemoteBox.toggleClass("empty", true).find(".message").text("对方摄像头不可用");
@@ -695,16 +698,17 @@ fn.onControl = function (obj) {
                 this.stopRemoteStreamMeeting(obj.account);
             }
             break;
-        // NETCALL_CONTROL_COMMAND_SELF_ON_BACKGROUND 自己处于后台
-        // NETCALL_CONTROL_COMMAND_START_NOTIFY_RECEIVED 告诉发送方自己已经收到请求了（用于通知发送方开始播放提示音）
-        // NETCALL_CONTROL_COMMAND_NOTIFY_RECORD_START 通知对方自己开始录制视频了
-        // NETCALL_CONTROL_COMMAND_NOTIFY_RECORD_STOP 通知对方自己结束录制视频了
+            // NETCALL_CONTROL_COMMAND_SELF_ON_BACKGROUND 自己处于后台
+            // NETCALL_CONTROL_COMMAND_START_NOTIFY_RECEIVED 告诉发送方自己已经收到请求了（用于通知发送方开始播放提示音）
+            // NETCALL_CONTROL_COMMAND_NOTIFY_RECORD_START 通知对方自己开始录制视频了
+            // NETCALL_CONTROL_COMMAND_NOTIFY_RECORD_STOP 通知对方自己结束录制视频了
     }
 };
 
 // 对方请求音频切换为视频时
 fn.beingAskSwitchToVideo = function () {
     var that = this;
+
     function agree() {
         this.log("同意切换到视频通话");
         this.netcall.control({
@@ -739,6 +743,7 @@ fn.beingAskSwitchToVideo = function () {
         // $("#askSwitchToVideoDialog").dialog("close");
         this.$switchToAudioButton.toggleClass("disabled", false);
     }
+
     function reject() {
         this.log("拒绝切换到视频通话");
         this.netcall.control({
@@ -1094,7 +1099,7 @@ fn.onHangup = function (obj) {
     }
     try {
         // $("#askSwitchToVideoDialog").dialog("close");
-    } catch (e) { }
+    } catch (e) {}
     this.clearBeCallTimer();
     /* var tipText;
     if(this.netcallDurationTimer !== null) {
@@ -1148,6 +1153,9 @@ fn.doOpenChatBox = function () {
  * @param {string} scene 是否是群视频，默认值p2p
  */
 fn.onBeCalling = function (obj, scene) {
+    // 浏览器标题栏闪烁
+    this.yx.openFlashTitle()
+
     scene = scene || 'p2p';
     this.log("收到音视频呼叫");
     console.log("on be calling:", obj);
@@ -1170,7 +1178,9 @@ fn.onBeCalling = function (obj, scene) {
     var WB = window.yunXin.WB
     if (netcall.calling || this.beCalling || WB.isCalling || WB.isCalled) {
 
-        var tmp = { command: Netcall.NETCALL_CONTROL_COMMAND_BUSY };
+        var tmp = {
+            command: Netcall.NETCALL_CONTROL_COMMAND_BUSY
+        };
         if (scene === 'p2p') {
             tmp.channelId = channelId;
         }
@@ -1380,7 +1390,7 @@ fn.doCalling = function (type) {
     }.bind(this));*/
 
     // this.checkDeviceStateUI();
-    this.afterPlayRingA = function () { };
+    this.afterPlayRingA = function () {};
     this.playRing("A", 1, function () {
         this.afterPlayRingA && this.afterPlayRingA();
         this.afterPlayRingA = null;
@@ -1439,7 +1449,7 @@ fn.doCalling = function (type) {
 };
 
 fn.setDeviceAudioIn = function (state) {
-  var that = this
+    var that = this
     $(".icon-micro").toggleClass("icon-disabled", !state);
     that.deviceAudioInOn = !!state;
     if (state) {
@@ -1602,7 +1612,7 @@ fn.clearRingPlay = function () {
 };
 
 fn.playRing = function (name, count, done) {
-    done = done || function () { };
+    done = done || function () {};
     this.playRingInstance = this.playRingInstance || {};
     var nameMap = {
         A: "avchat_connecting",
@@ -1612,9 +1622,11 @@ fn.playRing = function (name, count, done) {
         E: "avchat_ring"
     };
     var url = "audio/" + nameMap[name] + ".mp3";
+
     function doPlay(url, playDone) {
         var audio = document.createElement("audio");
         audio.autoplay = true;
+
         function onEnded() {
 
             this.playRingInstance.cancel = null;

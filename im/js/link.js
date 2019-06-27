@@ -251,10 +251,16 @@ var SDKBridge = function (ctr, data) {
   //       this.person[members[i].account] = true;
   //  }
   // };
+
   function onMsg(msg) {
     //涉及UI太多放到main.js里去处理了
-    console.log('收到------------tip');
+    console.log('收到新------------tip')
     this.controller.doMsg(msg);
+    // msg.attach=underfine的话证明是音视频信息，提示功能在netcall.js里处理，因此在这不再做音视频信息提示处理
+    if (!msg.attach) {
+      this.controller.openFlashTitle()
+      $("#audioPlay")[0].play()
+    }
   }
 
   function onOfflineSysmsgs(sysMsgs) {
@@ -558,6 +564,7 @@ SDKBridge.prototype.subscribeMultiPortEvent = function (accounts) {
       } else {
         console.info('订阅好友事件', res);
       }
+
     }
   });
 };

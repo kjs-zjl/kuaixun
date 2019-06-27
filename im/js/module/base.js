@@ -14,6 +14,7 @@ YX.fn = YX.prototype;
 
 YX.fn.initModule = function () {
   this.initBase();
+  this.bodyEventClick();
   this.message();
   this.notification();
   this.personCard();
@@ -50,6 +51,52 @@ YX.fn.initBase = function () {
   //多端登陆
   this.multiportEvt();
 };
+
+/**
+ * 监听窗口的点击事件，如果当前没有未读信息但已开启浏览器标题栏闪烁效果,则关闭
+ */
+YX.fn.bodyEventClick = function () {
+  let that = this
+  document.body.addEventListener('click', function () {
+    console.log(that.totalUnread, flashTitleRun)
+    if (!that.totalUnread && flashTitleRun) {
+      that.closeFlashTitle()
+    }
+  }, false)
+}
+/**
+ * 标题栏闪烁函数
+ */
+var flag = false
+var flashTitleRun = false
+var allowFlashTitle = true
+var flashTitle = function () {
+  if (!allowFlashTitle) {
+    return
+  }
+  flashTitleRun = true
+  flag = !flag
+  document.title = flag ? "★ ★ 有新的消息 ★ ★" : "..."
+  setTimeout(flashTitle, 400)
+}
+
+//关闭浏览器标题栏闪烁效果，注意不是直接调用flashTitle，要闲先判断定时器是不是已经在执行，保证多次调用只会执行一次。
+YX.fn.openFlashTitle = function () {
+  //没有执行时，才执行
+  if (!flashTitleRun) {
+    allowFlashTitle = true
+    flashTitle();
+  }
+}
+
+/**
+ * 关闭浏览器标题栏闪烁效果
+ */
+YX.fn.closeFlashTitle = function () {
+  document.title = "快讯网页版"
+  allowFlashTitle = false
+  flashTitleRun = false
+}
 
 /**
  * 同步完成后 UI显示  本demo这里显示最近会话列表 跟消息中心 新系统通知技术计数
