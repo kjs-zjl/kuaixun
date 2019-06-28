@@ -663,6 +663,39 @@ SDKBridge.prototype.sendCustomMessage = function (scene, to, content, callback) 
 };
 
 /**
+ * 发送粘贴的图片，粘贴后直接发送
+ * @param scene：场景，分为：P2P点对点对话，team群对话,callback回调
+ * @param to：消息的接收方
+ * @param blob：发送的图片blob
+ * @param callback：回调
+ */
+SDKBridge.prototype.sendPastePictrue = function (scene, to, blob, callback) {
+  var that = this,
+    type = 'image';
+  this.nim.sendFile({
+    scene: scene,
+    to: to,
+    type: type,
+    blob: blob,
+    uploadprogress: function (data) {
+      console && console.log(data.percentageText);
+    },
+    uploaderror: function () {
+      console && console.log('上传失败');
+    },
+    uploaddone: function (error, file) {
+      console.log(error);
+      console.log(file);
+      console.log('上传' + (!error ? '成功' : '失败'));
+    },
+    beforesend: function (msgId) {
+      console && console.log('正在发送消息, id=' + msgId);
+    },
+    done: callback
+  });
+};
+
+/**
  * 发送文件消息
  * @param scene：场景，分为：P2P点对点对话，team群对话,callback回调
  * @param to：消息的接收方

@@ -26,6 +26,7 @@ YX.fn.message = function () {
   YX.fn.recordTime = 0;
   this.$sendBtn.on('click', this.sendTextMessage.bind(this));
   this.$messageText.on('keydown', this.inputMessage.bind(this));
+  this.$messageText.on('paste', this.PastePictrue.bind(this));
   this.$chooseFileBtn.on('click', 'a', this.chooseFile.bind(this));
   this.$fileInput.on('change', this.uploadFile.bind(this));
   this.$toRecord.on('click', this.recordAudio.bind(this));
@@ -82,6 +83,10 @@ YX.fn.message = function () {
       delete: {
         name: '撤回',
         icon: 'delete'
+      },
+      copy: {
+        name: '复制',
+        icon: 'copy'
       }
     }
   });
@@ -183,6 +188,47 @@ YX.fn.cbShowEmoji = function (result) {
 
 YX.fn.showEmoji = function () {
   this.$emNode._$show();
+};
+/*************************************************************************
+ * 粘贴图片逻辑
+ *
+ ************************************************************************/
+YX.fn.PastePictrue = function () {
+  var that = this,
+    scene = this.crtSessionType,
+    to = this.crtSessionAccount,
+    cbd = event.clipboardData,
+    ua = window.navigator.userAgent;
+  // 如果是 Safari 直接 return
+  if (!(event.clipboardData && event.clipboardData.items)) {
+    return;
+  }
+  // Mac平台下Chrome49版本以下 复制Finder中的文件的Bug Hack掉
+  if (cbd.items && cbd.items.length === 2 && cbd.items[0].kind === "string" && cbd.items[1].kind === "file" &&
+    cbd.types && cbd.types.length === 2 && cbd.types[0] === "text/plain" && cbd.types[1] === "Files" &&
+    ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49) {
+    return;
+  }
+  for (var i = 0; i < cbd.items.length; i++) {
+    var item = cbd.items[i];
+    if (item.kind == "file") {
+      var blob = item.getAsFile();
+      if (blob.size === 0) {
+        return;
+      }
+      // var reader = new FileReader();
+      // var imgs = new Image();
+      // imgs.file = blob;
+      // reader.onload = (function (aImg) {
+      //   return function (e) {
+      //     aImg.src = e.target.result;
+      //     console.log(111111, e.target.result)
+      //   };
+      // })(imgs);
+      // reader.readAsDataURL(blob);
+      that.mysdk.sendPastePictrue(scene, to, blob, that.sendMsgDone.bind(that));
+    }
+  }
 };
 /*************************************************************************
  * 发送消息逻辑
