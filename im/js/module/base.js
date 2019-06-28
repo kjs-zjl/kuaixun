@@ -58,7 +58,6 @@ YX.fn.initBase = function () {
 YX.fn.bodyEventClick = function () {
   let that = this
   document.body.addEventListener('click', function () {
-    console.log(that.totalUnread, flashTitleRun)
     if (!that.totalUnread && flashTitleRun) {
       that.closeFlashTitle()
     }

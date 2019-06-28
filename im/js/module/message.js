@@ -42,6 +42,7 @@ YX.fn.message = function () {
   $.contextMenu({
     selector: '.j-msg',
     callback: function (key, options) {
+      // 撤回信息
       if (key === 'delete') {
         var id = options.$trigger.parent().data('id');
         var msg = this.cache.findMsg(this.crtSession, id);
@@ -77,6 +78,32 @@ YX.fn.message = function () {
             }
           }.bind(this)
         });
+        // 复制信息 
+      } else if (key === 'copy') {
+        // 复制信息到粘贴板
+        function copyMessage(msg) {
+          var oInput = document.createElement('input');
+          oInput.value = msg
+          document.body.appendChild(oInput);
+          oInput.select(); // 选择对象
+          document.execCommand("Copy"); // 执行浏览器复制命令
+          oInput.className = 'oInput';
+          oInput.style.display = 'none';
+          // alert('成功复制到粘贴板');
+        }
+        var id = options.$trigger.parent().data('id')
+        var msg = this.cache.findMsg(this.crtSession, id);
+        if (msg.type !== "text" && msg.type !== 'image') {
+          alert('该类型消息不支持复制');
+          return
+        }
+        if (msg.type === 'text') {
+          copyMessage(msg.text)
+        }
+        if (msg.type === 'image') {
+          msg.file.type = 'image'
+          copyMessage(JSON.stringify(msg.file))
+        }
       }
     }.bind(this),
     items: {
@@ -199,6 +226,7 @@ YX.fn.PastePictrue = function () {
     to = this.crtSessionAccount,
     cbd = event.clipboardData,
     ua = window.navigator.userAgent;
+  var originVal = that.$messageText.val()
   // 如果是 Safari 直接 return
   if (!(event.clipboardData && event.clipboardData.items)) {
     return;
@@ -211,7 +239,7 @@ YX.fn.PastePictrue = function () {
   }
   for (var i = 0; i < cbd.items.length; i++) {
     var item = cbd.items[i];
-    if (item.kind == "file") {
+    if (item.kind === "file") {
       var blob = item.getAsFile();
       if (blob.size === 0) {
         return;
@@ -226,7 +254,70 @@ YX.fn.PastePictrue = function () {
       //   };
       // })(imgs);
       // reader.readAsDataURL(blob);
+      // console.log(blob)
       that.mysdk.sendPastePictrue(scene, to, blob, that.sendMsgDone.bind(that));
+    } else if (item.kind === "string") {
+      item.getAsString(function (str) {
+        try {
+          var obj = JSON.parse(str);
+          if (typeof obj == 'object' && obj) {
+            if (obj.type === 'image') {
+              that.$messageText.val('' + originVal)
+              /**  
+               * 将以base64的图片url数据转换为Blob  
+               * @param urlData  
+               * 用url方式表示的base64图片数据  
+               */
+              function convertBase64UrlToBlob(base64) {
+                var urlData = base64.dataURL;
+                var type = base64.type;
+                var bytes = window.atob(urlData.split(',')[1]); //去掉url的头，并转换为byte
+                //处理异常,将ascii码小于0的转换为大于0  
+                var ab = new ArrayBuffer(bytes.length);
+                var ia = new Uint8Array(ab);
+                for (var i = 0; i < bytes.length; i++) {
+                  ia[i] = bytes.charCodeAt(i);
+                }
+                return new Blob([ab], {
+                  type: type
+                });
+              }
+              /* 
+               * 图片的绝对路径地址 转换成base64编码 如下代码： 
+               */
+              function getBase64Image(img) {
+                var canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+                var ext = img.src.substring(img.src.lastIndexOf(".") + 1).toLowerCase();
+                var dataURL = canvas.toDataURL("image/" + ext);
+                return {
+                  dataURL: dataURL,
+                  type: "image/" + ext
+                };
+              }
+              var img = obj.url
+              var image = new Image();
+              image.crossOrigin = '';
+              image.src = img;
+              image.onload = function () {
+                var base64 = getBase64Image(image);
+                // msg.file.base64 = base64
+                var blob = convertBase64UrlToBlob(base64)
+                that.mysdk.sendPastePictrue(scene, to, blob, that.sendMsgDone.bind(that));
+              }
+
+            }
+            return true;
+          } else {
+            return false;
+          }
+        } catch (e) {
+          return false;
+        }
+      })
     }
   }
 };
