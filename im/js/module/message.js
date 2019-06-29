@@ -393,14 +393,15 @@ YX.fn.sendTextMessage = function () {
           options.clientAntiSpam = true;
           break;
       }
-      if (
-        this.crtSessionType === 'team' &&
-        this.crtSessionTeamType === 'advanced'
-      ) {
-        if ($('#needTeamMsgReceipt') && $('#needTeamMsgReceipt')[0].checked) {
-          options.needMsgReceipt = true;
-        }
-      }
+      // 查询是否需要群回执
+      // if (
+      //   this.crtSessionType === 'team' &&
+      //   this.crtSessionTeamType === 'advanced'
+      // ) {
+      //   if ($('#needTeamMsgReceipt') && $('#needTeamMsgReceipt')[0].checked) {
+      //     options.needMsgReceipt = true;
+      //   }
+      // }
       this.nim.sendText(options);
     }
   }
