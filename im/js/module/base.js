@@ -241,7 +241,7 @@ YX.fn.openChatBox = function (account, scene) {
         that.crtSessionAccount
       );
       // 监听@键
-      that.listenAtMember(account)
+      that.listenAtTeamMember()
     });
     this.crtSessionTeamType = info ? info.type : 'normal';
     if (this.crtSessionTeamType === 'advanced') {

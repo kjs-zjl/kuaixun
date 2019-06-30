@@ -422,7 +422,6 @@ YX.fn.sendTextMessage = function () {
       //     options.needMsgReceipt = true;
       //   }
       // }
-      console.log(options)
       this.nim.sendText(options);
     }
   }
@@ -573,44 +572,77 @@ YX.fn.sendMsgDone = function (error, msg) {
 /**
  * @某人
  */
-YX.fn.listenAtMember = function (account) {
+YX.fn.listenAtTeamMember = function () {
   var that = this
+  var teamId = that.crtSessionAccount
   var atwhoMembers = []
-  var members = that.cache.getTeamMembers(account).members
-  if (members.length > 1) {
-    atwhoMembers.push({
-      nick: '所有人',
-      account: '所有人'
-    })
-  }
-  for (let i = 0; i < members.length; i++) {
-    var member = members[i]
-    if (that.cache.getUserById(member.account) && member.account !== that.accid) {
-      atwhoMembers.push(that.cache.getUserById(member.account))
+  var members;
+  var shouTeamMember = function () {
+    members = that.cache.getTeamMembers(teamId).members
+    var array = []
+    if (members.length > 1) {
+      atwhoMembers.push({
+        nick: '所有人',
+        account: '所有人'
+      })
+    }
+    for (let i = 0; i < members.length; i++) {
+      if (!that.cache.getUserById(members[i].account)) {
+        array.push(members[i].account)
+      }
+    }
+    if (array.length > 0) {
+      getTeamMemberInfo(array)
+    } else {
+      showAtTeamMemberPanel()
     }
   }
-  that.$messageText.atwho({
-    at: "@",
-    // displayTpl: "<li data-atwho-nick='${nick}' data-atwho-account='${account}'>${nick}</li>",
-    displayTpl: "<li data-listen-at>${nick}</li>",
-    // insertTpl: '${atwho-at}${nick}',
-    insertTpl: "<span class='atwho-inserted-item' data-atwho-account='${account}'>${atwho-at}${nick}</span>",
-    data: atwhoMembers,
-    limit: 40,
-    // callbacks: {
-    //   beforeSave: function (data) {
-    //     console.log('beforeSave', data)
-    //     return data
-    //   },
-    //   beforeInsert: function (value, $li) {
-    //     // console.log('beforeInsert', value, $li, $li.attr('data-atwho-nick'), $li.attr('data-atwho-account'))
-    //     // var accid = $li.attr('data-atwho-account')
-    //     // var html = '',
-    //     //   // html += '<span data-atwho-account="${nick}"></span>'
-    //     //   return value === '@All' ? '@所有人' : value
-    //   }
-    // }
-  })
+  var showAtTeamMemberPanel = function () {
+    that.sortTeamMembers(members)
+    for (var i = 0, l = members.length; i < l; ++i) {
+      var member = members[i],
+        account = member.account;
+      member.nick = getNick(account)
+      if (account !== that.accid) {
+        atwhoMembers.push(member)
+      }
+    }
+    that.$messageText.atwho({
+      at: "@",
+      // displayTpl: "<li data-atwho-nick='${nick}' data-atwho-account='${account}'>${nick}</li>",
+      displayTpl: "<li data-listen-at>${nick}</li>",
+      // insertTpl: '${atwho-at}${nick}',
+      insertTpl: "<span class='atwho-inserted-item' data-atwho-account='${account}'>${atwho-at}${nick}</span>",
+      data: atwhoMembers,
+      limit: 40,
+      // callbacks: {
+      //   beforeSave: function (data) {
+      //     console.log('beforeSave', data)
+      //     return data
+      //   },
+      //   beforeInsert: function (value, $li) {
+      //     // console.log('beforeInsert', value, $li, $li.attr('data-atwho-nick'), $li.attr('data-atwho-account'))
+      //     // var accid = $li.attr('data-atwho-account')
+      //     // var html = '',
+      //     //   // html += '<span data-atwho-account="${nick}"></span>'
+      //     //   return value === '@All' ? '@所有人' : value
+      //   }
+      // }
+    })
+  }
+  var getTeamMemberInfo = function (array) {
+    that.mysdk.getUsers(array, function (err, data) {
+      if (!err) {
+        for (var j = 0; j < data.length; j++) {
+          that.cache.updatePersonlist(data[j])
+        }
+        showAtTeamMemberPanel()
+      } else {
+        alert("获取用户信息失败")
+      }
+    })
+  }
+  that.getTeamMembers(teamId, shouTeamMember)
 }
 
 YX.fn.inputMessage = function (e) {
