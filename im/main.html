@@ -8,7 +8,8 @@
 	<link rel="stylesheet" href="css/animate.css" />
 	<link rel="stylesheet" href="css/jquery-ui.css" />
 	<link rel="stylesheet" href="css/contextMenu/jquery.contextMenu.css" />
-	<link rel="stylesheet" href="css/minAlert.css" />
+	<link rel="stylesheet" href="css/minAlert.css">
+	<link rel="stylesheet" href="css/jquery.atwho.min.css" />
 	<link rel="stylesheet" href="css/main.css" />
 	<link rel="stylesheet" href="css/uiKit.css" />
 	<link rel="stylesheet" href="css/CEmojiEngine.css" />
@@ -301,8 +302,10 @@
 								<i id="toRecordCancle" class="u-voice-duration-action"></i>
 							</span>
 						</div>
-						<textarea id="messageText" class="chat-btn msg-input box-sizing radius5px p2p" rows="1"
-							autofocus="autofocus" maxlength="500"></textarea>
+						<!-- <textarea id="messageText" class="chat-btn msg-input box-sizing radius5px p2p" rows="1"
+							autofocus="autofocus" maxlength="500"></textarea> -->
+						<div id="messageText" contenteditable="true" class="chat-btn msg-input box-sizing radius5px p2p"
+							maxlength="500"></div>
 						<!-- <span class="chat-context" id="showTeamMsgReceipt">
 							<label for="needTeamMsgReceipt">
 								<input id="needTeamMsgReceipt" type="checkbox" name="needTeamMsgReceipt" />回执</label>
@@ -666,6 +669,7 @@
 
 	<script src="./js/3rd/whiteboard.js"></script>
 	<script src="../3rd/jquery-1.11.3.min.js"></script>
+
 	<!--<script src="../3rd/zepto.min.js"></script>-->
 	<script>
 		// FastClick.attach(document.body);
@@ -697,6 +701,8 @@
 	<!-- 右键菜单-->
 	<script src="js/3rd/contextMenu/jquery.ui.position.js"></script>
 	<script src="js/3rd/contextMenu/jquery.contextMenu.js"></script>
+	<script src="js/3rd/atwho/jquery.caret.js"></script>
+	<script src="js/3rd/atwho/jquery.atwho.min.js"></script>
 	<script src="../3rd/recorder.js"></script>
 	<script src="js/emoji.js"></script>
 	<script src="js/md5.js"></script>

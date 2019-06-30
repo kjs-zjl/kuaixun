@@ -180,7 +180,7 @@ YX.fn.openChatBox = function (account, scene) {
   this.$rightPanel.find('.u-chat-notice').addClass('hide');
   this.$rightPanel.find('.chat-mask').addClass('hide');
   this.$rightPanel.removeClass('hide');
-  this.$messageText.val('');
+  this.$messageText.html('');
   $('#showTeamMsgReceipt').hide()
 
   // 让netcall.js感知到打开聊天框的操作，做一些UI层的控制
@@ -211,11 +211,15 @@ YX.fn.openChatBox = function (account, scene) {
     }
     // 群资料入口隐藏
     this.$teamInfo && this.$teamInfo.addClass('hide');
+    // 取消@键监听
+    that.$messageText.atwho({
+      at: "@",
+      data: []
+    })
   } else {
     //群聊
     info = this.cache.getTeamById(account);
     this.$teamInfo && this.$teamInfo.removeClass('hide');
-
     if (info) {
       if (info.avatar) {
         this.$chatTitle
@@ -236,6 +240,8 @@ YX.fn.openChatBox = function (account, scene) {
         userUID,
         that.crtSessionAccount
       );
+      // 监听@键
+      that.listenAtMember(account)
     });
     this.crtSessionTeamType = info ? info.type : 'normal';
     if (this.crtSessionTeamType === 'advanced') {

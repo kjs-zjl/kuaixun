@@ -35,6 +35,7 @@ YX.fn.team = function () {
 	this.$teamInfoContainer.delegate('.j-beInviteMode', 'change', this.setBeInviteMode.bind(this))
 	this.$teamInfoContainer.delegate('.j-updateTeamMode', 'change', this.setUpdateTeamMode.bind(this))
 }
+
 /**
  * 最近联系人显示
  * @return {void}
@@ -65,7 +66,7 @@ YX.fn.getTeamMembers = function (id, callback) {
 	if (!(callback instanceof Function)) {
 		callback = function () {}
 	}
- 	var that = this
+	var that = this
 	this.mysdk.getTeamMembers(id, function (err, obj) {
 		if (!err) {
 			that.cache.setTeamMembers(id, obj)
@@ -103,14 +104,25 @@ YX.fn.showTeamView = function (type, teamType) {
 				var members = error ? [] : obj.members
 
 				//开启弹框 
-				that.dialog.open({ list: list, cbConfirm: that.createTeam, env: that, yx: that, selectedlist: members })
+				that.dialog.open({
+					list: list,
+					cbConfirm: that.createTeam,
+					env: that,
+					yx: that,
+					selectedlist: members
+				})
 			}
 		)
 		//用来区分是否创群
 		that.addTeamMemberTag = true
 	} else {
 		//开启弹框
-		that.dialog.open({ list: list, cbConfirm: that.createTeam, env: that, yx: that })
+		that.dialog.open({
+			list: list,
+			cbConfirm: that.createTeam,
+			env: that,
+			yx: that
+		})
 		that.addTeamMemberTag = false
 	}
 
@@ -142,7 +154,9 @@ YX.fn.createTeam = function (list) {
 			accounts: accounts,
 			ps: '',
 			done: function (error, params) {
-				if (error) { alert('添加成员失败') }
+				if (error) {
+					alert('添加成员失败')
+				}
 			}
 		})
 		this.$teamInfoContainer.addClass('hide')
@@ -245,7 +259,7 @@ YX.fn.doTeamAdd = function () {
 }
 /********************************************************************
  * 群资料
-********************************************************************/
+ ********************************************************************/
 YX.fn.showTeamInfo = function () {
 	var that = this
 	this.$teamInfoContainer.load('./teamInfo.html', function () {
@@ -478,8 +492,7 @@ YX.fn.setJoinMode = function (evt) {
 		teamId: teamId,
 		joinMode: joinMode,
 		done: function (error, params) {
-			if (!error) {
-			} else {
+			if (!error) {} else {
 				alert(error.message)
 			}
 		}
@@ -492,8 +505,7 @@ YX.fn.setInviteMode = function (evt) {
 		teamId: teamId,
 		inviteMode: inviteMode,
 		done: function (error, params) {
-			if (!error) {
-			} else {
+			if (!error) {} else {
 				alert(error.message)
 			}
 		}
@@ -506,8 +518,7 @@ YX.fn.setBeInviteMode = function (evt) {
 		teamId: teamId,
 		beInviteMode: beInviteMode,
 		done: function (error, params) {
-			if (!error) {
-			} else {
+			if (!error) {} else {
 				alert(error.message)
 			}
 		}
@@ -520,8 +531,7 @@ YX.fn.setUpdateTeamMode = function (evt) {
 		teamId: teamId,
 		updateTeamMode: updateTeamMode,
 		done: function (error, params) {
-			if (!error) {
-			} else {
+			if (!error) {} else {
 				alert(error.message)
 			}
 		}

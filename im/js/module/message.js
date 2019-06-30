@@ -120,6 +120,7 @@ YX.fn.message = function () {
 
   //表情贴图模块
   this.initEmoji();
+
 };
 
 /**
@@ -128,6 +129,7 @@ YX.fn.message = function () {
  * @return
  */
 YX.fn.doMsg = function (msg) {
+  console.log(11, msg)
   var that = this,
     who = msg.to === userUID ? msg.from : msg.to,
     updateContentUI = function () {
@@ -208,7 +210,8 @@ YX.fn.cbShowEmoji = function (result) {
       );
     } else {
       // 表情，内容直接加到输入框
-      this.$messageText[0].value = this.$messageText[0].value + result.emoji;
+      // this.$messageText[0].value = this.$messageText[0].value + result.emoji;
+      this.$messageText.html(this.$messageText.html() + result.emoji)
     }
   }
 };
@@ -226,7 +229,8 @@ YX.fn.PastePictrue = function () {
     to = this.crtSessionAccount,
     cbd = event.clipboardData,
     ua = window.navigator.userAgent;
-  var originVal = that.$messageText.val()
+  // var originVal = that.$messageText.val()
+  var originVal = that.$messageText.html()
   // 如果是 Safari 直接 return
   if (!(event.clipboardData && event.clipboardData.items)) {
     return;
@@ -262,7 +266,8 @@ YX.fn.PastePictrue = function () {
           var obj = JSON.parse(str);
           if (typeof obj == 'object' && obj) {
             if (obj.type === 'image') {
-              that.$messageText.val('' + originVal)
+              // that.$messageText.val('' + originVal)
+              that.$messageText.html('' + originVal)
               /**  
                * 将以base64的图片url数据转换为Blob  
                * @param urlData  
@@ -354,19 +359,34 @@ YX.fn.sendTextMessage = function () {
   }
   var scene = this.crtSessionType,
     to = this.crtSessionAccount,
-    text = this.$messageText.val().trim();
+    // text = this.$messageText.val().trim();
+    text = this.$messageText.text().trim();
   if (!!to && !!text) {
     if (text.length > 500) {
       alert('消息长度最大为500字符');
     } else if (text.length === 0) {
       return;
     } else {
-      var options = {
-        scene: scene || 'p2p',
-        to: to,
-        text: text,
-        done: this.sendMsgDone.bind(this)
-      };
+      var ats = this.$messageText.find('.atwho-inserted-item'),
+        options = {
+          scene: scene || 'p2p',
+          to: to,
+          text: text,
+          done: this.sendMsgDone.bind(this)
+        }
+      if (scene !== 'p2p' && ats.length !== 0) {
+        var apns = {
+          accounts: [],
+          content: text,
+          // forcePush: true
+        }
+        for (let i = 0; i < ats.length; i++) {
+          var at = ats[i];
+          apns.accounts.push($(at).attr('data-atwho-account'))
+        }
+        $.unique(apns.accounts)
+        options.apns = apns
+      }
       // 客户端反垃圾检查
       var ret = nim.filterClientAntispam({
         content: text
@@ -402,6 +422,7 @@ YX.fn.sendTextMessage = function () {
       //     options.needMsgReceipt = true;
       //   }
       // }
+      console.log(options)
       this.nim.sendText(options);
     }
   }
@@ -536,7 +557,8 @@ YX.fn.sendMsgDone = function (error, msg) {
   }
   this.cache.addMsgs(msg);
   if (msg.type === 'text') {
-    this.$messageText.val('');
+    // this.$messageText.val('');
+    this.$messageText.html('');
   }
   this.$chatContent.find('.no-msg').remove();
   this.cache.dealTeamMsgReceipts(msg, function () {
@@ -548,13 +570,79 @@ YX.fn.sendMsgDone = function (error, msg) {
   }.bind(this))
 };
 
+/**
+ * @某人
+ */
+YX.fn.listenAtMember = function (account) {
+  var that = this
+  var atwhoMembers = []
+  var members = that.cache.getTeamMembers(account).members
+  if (members.length > 1) {
+    atwhoMembers.push({
+      nick: '所有人',
+      account: '所有人'
+    })
+  }
+  for (let i = 0; i < members.length; i++) {
+    var member = members[i]
+    if (that.cache.getUserById(member.account) && member.account !== that.accid) {
+      atwhoMembers.push(that.cache.getUserById(member.account))
+    }
+  }
+  that.$messageText.atwho({
+    at: "@",
+    // displayTpl: "<li data-atwho-nick='${nick}' data-atwho-account='${account}'>${nick}</li>",
+    displayTpl: "<li data-listen-at>${nick}</li>",
+    // insertTpl: '${atwho-at}${nick}',
+    insertTpl: "<span class='atwho-inserted-item' data-atwho-account='${account}'>${atwho-at}${nick}</span>",
+    data: atwhoMembers,
+    limit: 40,
+    // callbacks: {
+    //   beforeSave: function (data) {
+    //     console.log('beforeSave', data)
+    //     return data
+    //   },
+    //   beforeInsert: function (value, $li) {
+    //     // console.log('beforeInsert', value, $li, $li.attr('data-atwho-nick'), $li.attr('data-atwho-account'))
+    //     // var accid = $li.attr('data-atwho-account')
+    //     // var html = '',
+    //     //   // html += '<span data-atwho-account="${nick}"></span>'
+    //     //   return value === '@All' ? '@所有人' : value
+    //   }
+    // }
+  })
+}
+
 YX.fn.inputMessage = function (e) {
   var ev = e || window.event;
-  if ($.trim(this.$messageText.val()).length > 0) {
+  var woohecc = {
+    placeCaretAtEnd: function (el) {
+      el.focus();
+      if (typeof window.getSelection != "undefined" &&
+        typeof document.createRange != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+      }
+    },
+  }
+  if ($.trim(this.$messageText.text()).length > 0) {
     if (ev.keyCode === 13 && ev.ctrlKey) {
-      this.$messageText.val(this.$messageText.val() + '\r\n');
+      this.$messageText.html(this.$messageText.html() + '</br>\r\n');
+      woohecc.placeCaretAtEnd(this.$messageText.get(0));
+      return false;
     } else if (ev.keyCode === 13 && !ev.ctrlKey) {
-      this.sendTextMessage();
+      if ($('.atwho-view')[0].style.display !== 'block') {
+        this.sendTextMessage();
+      }
     }
   }
 };
