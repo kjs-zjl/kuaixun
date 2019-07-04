@@ -1,6 +1,8 @@
 if (!Function.prototype.bind) {
     Function.prototype.bind = function () {
-        var fn = this, args = Array.prototype.slice.call(arguments), object = args.shift();
+        var fn = this,
+            args = Array.prototype.slice.call(arguments),
+            object = args.shift();
         return function () {
             return fn.apply(object, args.concat(Array.prototype.slice.call(arguments)));
         }
@@ -47,8 +49,14 @@ var _$escape = (function () {
     var _reg = /<br\/?>$/,
         _map = {
             r: /\<|\>|\&|\r|\n|\s|\'|\"/g,
-            '<': '&lt;', '>': '&gt;', '&': '&amp;', ' ': '&nbsp;',
-            '"': '&quot;', "'": '&#39;', '\n': '<br/>', '\r': ''
+            '<': '&lt;',
+            '>': '&gt;',
+            '&': '&amp;',
+            ' ': '&nbsp;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '\n': '<br/>',
+            '\r': ''
         };
     return function (_content) {
         _content = _$encode(_map, _content);
@@ -58,11 +66,11 @@ var _$escape = (function () {
 /* 格式化日期 */
 Date.prototype.Format = function (fmt) {
     var o = {
-        "M+": this.getMonth() + 1,  // 月份
-        "d+": this.getDate(),		// 日
-        "h+": this.getHours(),		// 小时
-        "m+": this.getMinutes(),	// 分
-        "s+": this.getSeconds(),	// 秒
+        "M+": this.getMonth() + 1, // 月份
+        "d+": this.getDate(), // 日
+        "h+": this.getHours(), // 小时
+        "m+": this.getMinutes(), // 分
+        "s+": this.getSeconds(), // 秒
         "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
         "S": this.getMilliseconds() // 毫秒
     };
@@ -109,11 +117,15 @@ Array.complement = function (a, b) {
 };
 //两个数组的交集
 Array.intersect = function (a, b) {
-    return a.uniquelize().each(function (o) { return b.contains(o) ? o : null });
+    return a.uniquelize().each(function (o) {
+        return b.contains(o) ? o : null
+    });
 };
 //两个数组的差集
 Array.minus = function (a, b) {
-    return a.uniquelize().each(function (o) { return b.contains(o) ? null : o });
+    return a.uniquelize().each(function (o) {
+        return b.contains(o) ? null : o
+    });
 };
 //两个数组并集
 Array.union = function (a, b) {
@@ -121,11 +133,12 @@ Array.union = function (a, b) {
 };
 
 /**
-* 构造第一条消息，显示在最近联系人昵称的下面(移到UI组件去了)
-* @param msg：消息对象
-*/
+ * 构造第一条消息，显示在最近联系人昵称的下面(移到UI组件去了)
+ * @param msg：消息对象
+ */
 function buildSessionMsg(msg) {
-    var text = (msg.scene != 'p2p' ? ((msg.from === userUID) ? "你" : getNick(msg.from)) + ":" : ""), type = msg.type;
+    var text = (msg.scene != 'p2p' ? ((msg.from === userUID) ? "你" : getNick(msg.from)) + ":" : ""),
+        type = msg.type;
     if (!/text|image|file|audio|video|geo|custom|tip|notification/i.test(type)) return '';
     switch (type) {
         case 'text':
@@ -195,9 +208,43 @@ function getMessage(msg) {
     var sentStr = (msg.flow === 'in') ? "收到" : "发送";
     switch (msg.type) {
         case 'text':
-            var re = /(http:\/\/[\w.\/]+)(?![^<]+>)/gi; // 识别链接
-            str = _$escape(msg.text);
-            str = str.replace(re, "<a href='$1' target='_blank'>$1</a>");
+            function IsURL(str_url) {
+                var strRegex = "^((https|http|ftp|rtsp|mms)?://)" +
+                    "?(([0-9a-zA-Z_!~*'().&=+$%-]+: )?[0-9a-zA-Z_!~*'().&=+$%-]+@)?" //ftp的user@ 
+                    +
+                    "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184 
+                    +
+                    "|" // 允许IP和DOMAIN（域名）
+                    +
+                    "([0-9a-zA-Z_!~*'()-]+\.)*" // 域名- www. 
+                    +
+                    "([0-9a-zA-Z][0-9a-zA-Z-]{0,61})?[0-9a-zA-Z]\." // 二级域名 
+                    +
+                    "[a-zA-Z]{2,6})" // first level domain- .com or .museum 
+                    +
+                    "(:[0-9]{1,4})?" // 端口- :80 
+                    +
+                    "((/?)|" // a slash isn't required if there is no file name 
+                    +
+                    "(/[0-9a-zA-Z_!~*'().;?:@&=+$,%#-]+)+/?)$";
+                var re = new RegExp(strRegex);
+                //re.test()
+                if (re.test(str_url)) {
+                    return (true);
+                } else {
+                    return (false);
+                }
+            }
+            str = _$escape(msg.text)
+            if (IsURL(str)) {
+                str = `<a href=${str} target='_blank'>${str}</a>`
+            } else {
+                var re = /((((http:|https:)\/\/[\w.\/]+)(?![^<]+>)))/gi; // 识别链接
+                str = str.replace(re, "<a href='$1' target='_blank'>$1</a>");
+            }
+            // var re = /(http:\/\/[\w.\/]+)(?![^<]+>)/gi; // 识别链接
+            // str = _$escape(msg.text);
+            // str = str.replace(re, "<a href='$1' target='_blank'>$1</a>");
 
             str = buildEmoji(str);
             str = "<div class='f-maxWid'>" + str + "</div>"
@@ -216,7 +263,8 @@ function getMessage(msg) {
                 //     url: msg.file.url
                 // })
                 // str = '<a href="' + msg.file.url + '?imageView" target="_blank"><img onload="loadImg()" data-src="' + msg.file.url + '" src="' + msg.file.url + '?imageView&thumbnail=200x0&quality=85"/></a>';
-                str = '<a href="' + url + '" target="_blank"><img onload="loadImg()" data-src="' + url + '" src="' + url + '?imageView&thumbnail=200x0&quality=85"/></a>';
+                // str = '<a href="' + url + '" target="_blank"><img onload="loadImg()" data-src="' + url + '" src="' + url + '?imageView&thumbnail=200x0&quality=85"/></a>';
+                str = '<img onload="loadImg()" data-magnify="gallery" data-caption=" " data-src="' + url + '" src="' + url + '?imageView&thumbnail=200x0&quality=85"/>';
             }
             break;
         case 'file':
@@ -260,7 +308,7 @@ function getMessage(msg) {
                 if (msg.from === userUID && msg.from !== msg.to) {
                     str = '<div class="u-audio j-mbox right" style="width:' + (100 + audioDur) + 'px"> <a href="javascript:;" class="j-play playAudio" data-ext="' + msg.file.ext + '" data-dur="' + msg.file.dur + '"  data-src="' + url + '">点击播放</a><b class="j-duration">' + audioDur + '"</b><span class="u-icn u-icn-play" title="播放音频"></span></div>'
                 } else {
-                    str = '<div class="u-audio j-mbox left '+ (unread ? 'unreadAudio': '') + '" style="width:' + (100 + audioDur) + 'px"> <a href="javascript:;" class="j-play playAudio" data-ext="' + msg.file.ext + '" data-dur="' + msg.file.dur + '" data-id="' + msg.idClient + '" data-src="' + url + '">点击播放</a><b class="j-duration">' + audioDur + '"</b><span class="u-icn u-icn-play" title="播放音频"></span></div>'
+                    str = '<div class="u-audio j-mbox left ' + (unread ? 'unreadAudio' : '') + '" style="width:' + (100 + audioDur) + 'px"> <a href="javascript:;" class="j-play playAudio" data-ext="' + msg.file.ext + '" data-dur="' + msg.file.dur + '" data-id="' + msg.idClient + '" data-src="' + url + '">点击播放</a><b class="j-duration">' + audioDur + '"</b><span class="u-icn u-icn-play" title="播放音频"></span></div>'
                 }
             } else {
                 str = '<a href="' + url + '" target="_blank" class="download-file"><span class="icon icon-file2"></span>[' + sentStr + '一条语音消息]</a>';
@@ -278,7 +326,7 @@ function getMessage(msg) {
             } else if (content.type === 3) {
                 var catalog = _$escape(content.data.catalog),
                     chartvar = _$escape(content.data.chartlet);
-                str = '<img class="chartlet" onload="loadImg()" src="./images/' + catalog + '/' + chartvar + '.png">';
+                str = '<img class="chartlet" onload="loadImg()" data-magnify="gallery" data-caption=" " data-src="./images/' + catalog + '/' + chartvar + '.png" src="./images/' + catalog + '/' + chartvar + '.png">';
             } else if (content.type == 4) {
                 str = msg.fromNick + '发起了[白板互动]';
             } else {
@@ -367,9 +415,9 @@ var transTime2 = (function () {
 })();
 
 /**
-* 根据消息的发送人，构造发送方，注意：发送人有可能是自己
-* @param msg：消息对象
-*/
+ * 根据消息的发送人，构造发送方，注意：发送人有可能是自己
+ * @param msg：消息对象
+ */
 function buildSender(msg) {
     var sender = '';
     if (msg.from === msg.to) {
@@ -392,7 +440,10 @@ function buildSender(msg) {
  * @return string
  */
 var dateFormat = (function () {
-    var _map = { i: !0, r: /\byyyy|yy|MM|cM|eM|M|dd|d|HH|H|mm|ms|ss|m|s|w|ct|et\b/g },
+    var _map = {
+            i: !0,
+            r: /\byyyy|yy|MM|cM|eM|M|dd|d|HH|H|mm|ms|ss|m|s|w|ct|et\b/g
+        },
         _12cc = ['上午', '下午'],
         _12ec = ['A.M.', 'P.M.'],
         _week = ['日', '一', '二', '三', '四', '五', '六'],
@@ -624,8 +675,8 @@ function transNotification(item) {
 }
 
 /**
-* 移除定位会话圆点
-*/
+ * 移除定位会话圆点
+ */
 
 function removeChatVernier(account) {
     if (account == $('li.active').attr('data-account')) {
@@ -633,8 +684,68 @@ function removeChatVernier(account) {
     }
 }
 
+/**
+ * 图片预览
+ */
 function loadImg() {
     $('#chatContent').scrollTop(99999);
+    $('[data-magnify]').magnify({
+        initMaximized: true,
+        headToolbar: [
+            'close'
+        ],
+        footToolbar: [
+            'zoomIn',
+            'zoomOut',
+            'prev',
+            'fullscreen',
+            'next',
+            'actualSize',
+            'rotateLeft',
+            'rotateRight'
+        ],
+        progressiveLoading: false,
+        callbacks: {
+            beforeOpen: function (el) {},
+            opened: function (el) {
+                setTimeout(() => {
+                    var str = '第' + (this.groupIndex + 1) + '张图片，共' + this.groupData.length + '张'
+                    this.$title.text(str)
+                }, 0);
+                // 第一张
+                this.groupIndex === 0 && this.$prev.hide()
+                // 最后一张
+                this.groupIndex + 1 === this.groupData.length && this.$next.hide()
+                $('.magnify-stage').click(function (ev) {
+                    if (!$(ev.target).is('.magnify-image')) {
+                        $('.magnify-modal').remove()
+                    }
+                })
+                // Will fire after modal is opened
+            },
+            beforeClose: function (el) {
+                // Will fire before modal is closed
+            },
+            closed: function (el) {
+                // Will fire after modal is closed
+            },
+            beforeChange: function (index) {
+                // console.log(index)
+                // Will fire before image is changed
+                // The arguments is the current image index of image group
+            },
+            changed: function (index) {
+                var str = '第' + (this.groupIndex + 1) + '张图片，共' + this.groupData.length + '张'
+                this.$title.text(str)
+                // 第一张
+                this.groupIndex === 0 ? this.$prev.hide() : this.$prev.show()
+                // 最后一张
+                this.groupIndex + 1 === this.groupData.length ? this.$next.hide() : this.$next.show()
+                // Will fire after image is changed
+                // The arguments is the next image index of image group
+            }
+        }
+    });
 }
 
 function getAvatar(url) {
@@ -652,7 +763,8 @@ function getAvatar(url) {
 //或者备注名或者昵称
 function getNick(account, cache) {
     cache = cache || yunXin.cache;
-    var nick = cache.getFriendAlias(account), tmp = cache.getUserById(account);
+    var nick = cache.getFriendAlias(account),
+        tmp = cache.getUserById(account);
     nick = nick || (tmp && tmp.nick ? tmp.nick : account)
     return nick;
 }

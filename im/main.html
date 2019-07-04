@@ -16,15 +16,12 @@
 	<link rel="stylesheet" href="css/rangeslider.css" />
 	<link rel="stylesheet" href="css/pure-min.css">
 	<link rel="stylesheet" href="css/whiteboard.css" />
+	<link rel="stylesheet" href="js/3rd/magnify-master/jquery.magnify.min.css">
+
 	<link rel="icon" href="images/icon.ico" type="image/x-icon" />
 </head>
 
 <body id="mainBody" class="hide">
-	<!-- 消息提醒语音 iframe标签是为了自动触发chrome的音频播放功能，src指向一个空的音频文件（详见书签栏） -->
-	<audio id="audioPlay">
-		<source src="./audio/msg.wav" type="audio/wav">
-	</audio>
-	<!-- <iframe allow="autoplay" style="display:none" src="./audio/emptyAudio.wav"></iframe> -->
 	<div class="bad-network hide tc radius5px" id="errorNetwork">已与服务器断开，请检查网络连接</div>
 	<div class="wrapper box-sizing">
 		<div class="content">
@@ -632,6 +629,10 @@
 			<button class="f-fr btn btn-cancel radius4p j-close">取消</button>
 		</div>
 	</div>
+	<!-- 消息提醒语音 iframe标签是为了自动触发chrome的音频播放功能，src指向一个空的音频文件（详见书签栏） -->
+	<audio id="audioPlay">
+		<source src="./audio/msg.wav" type="audio/wav">
+	</audio>
 	<div id="mask" class="mask hide"></div>
 	<script>
 		// 生产环境清除console.log()
@@ -698,6 +699,8 @@
 	<script src="../3rd/rtcSupport.js"></script>
 	<script src="js/3rd/jquery-ui.min.js"></script>
 	<script src="../3rd/rangeslider.min.js"></script>
+	<!-- 图片预览 -->
+	<script src="js/3rd/magnify-master/jquery.magnify.min.js"></script>
 	<!-- 右键菜单-->
 	<script src="js/3rd/contextMenu/jquery.ui.position.js"></script>
 	<script src="js/3rd/contextMenu/jquery.contextMenu.js"></script>
@@ -718,7 +721,6 @@
 	<script src="js/module/personCard.js"></script>
 	<script src="js/module/session.js"></script>
 	<script src="js/module/friend.js"></script>
-
 	<script src="js/module/team.js"></script>
 	<script src="js/module/dialog_team.js"></script>
 	<script src="js/module/cloudMsg.js"></script>

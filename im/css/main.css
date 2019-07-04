@@ -420,6 +420,18 @@ body {
   background: #5cacde;
 }
 
+.msg-text a:hover {
+  text-decoration: underline;
+}
+
+.item-me .msg-text a {
+  color: blue;
+}
+
+.item-you .msg-text a {
+  color: #238efa;
+}
+
 .item-me .download-file {
   display: block;
   color: #fff;
@@ -495,6 +507,7 @@ body {
 .msg .cnt img {
   width: 100%;
   max-width: 290px;
+  cursor: pointer;
   _width: 290px;
 }
 
@@ -2578,8 +2591,7 @@ body {
   border-bottom: none;
 }
 
-.netcall-box .control .control-item:hover .slider {
-}
+.netcall-box .control .control-item:hover .slider {}
 
 .netcall-box .control .slider {
   position: absolute;
@@ -2660,7 +2672,7 @@ body {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.netcall-box .netcall-show-video .control .control-item + .control-item {
+.netcall-box .netcall-show-video .control .control-item+.control-item {
   margin-left: 17px;
 }
 
@@ -2706,7 +2718,7 @@ body {
   opacity: 0.3 !important;
 }
 
-.netcall-box .netcall-button + .netcall-button {
+.netcall-box .netcall-button+.netcall-button {
   margin-left: 20px;
 }
 
@@ -3009,9 +3021,7 @@ body {
 }
 
 /** 对话框样式调整 */
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-3
-  .ui-dialog-buttonpane
-  .ui-button {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-3 .ui-dialog-buttonpane .ui-button {
   width: 115px;
   border: 1px solid #ddd;
 }
@@ -3083,69 +3093,53 @@ body {
   opacity: 0.6;
 }
 
-.ui-dialog.netcall-ui-dialog .ui-dialog-buttonpane .ui-button + .ui-button {
+.ui-dialog.netcall-ui-dialog .ui-dialog-buttonpane .ui-button+.ui-button {
   margin-left: 10px;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-1
-  .ui-dialog-buttonpane
-  .ui-button:first-child {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-1 .ui-dialog-buttonpane .ui-button:first-child {
   width: 115px;
   background-color: #d7dce0;
   color: #555;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-1
-  .ui-dialog-buttonpane
-  .ui-button:last-child {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-1 .ui-dialog-buttonpane .ui-button:last-child {
   width: 115px;
   background-color: #238efa;
   color: #fff;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-2
-  .ui-dialog-buttonpane
-  .ui-button:first-child {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-2 .ui-dialog-buttonpane .ui-button:first-child {
   width: 115px;
   background-color: #238efa;
   color: #fff;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-2
-  .ui-dialog-buttonpane
-  .ui-button:last-child {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-2 .ui-dialog-buttonpane .ui-button:last-child {
   width: 115px;
   background-color: #f5455e;
   color: #fff;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-3
-  .ui-dialog-buttonpane
-  .ui-button:first-child {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-3 .ui-dialog-buttonpane .ui-button:first-child {
   width: 115px;
   background-color: #238efa;
   color: #fff;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-4
-  .ui-dialog-buttonpane
-  .ui-button:first-child {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-4 .ui-dialog-buttonpane .ui-button:first-child {
   width: 84px;
   background-color: #238efa;
   color: #fff;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-5
-  .ui-dialog-buttonpane
-  .ui-button:first-child {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-5 .ui-dialog-buttonpane .ui-button:first-child {
   width: 84px;
   background-color: #bdd0fd;
   color: #fff;
 }
 
-.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-6
-  .ui-dialog-buttonpane
-  .ui-button:first-child:hover {
+.ui-dialog.netcall-ui-dialog.netcall-ui-dialog-6 .ui-dialog-buttonpane .ui-button:first-child:hover {
   background-color: #bdd0fd;
   color: #fff;
   opacity: 1;
@@ -3582,4 +3576,49 @@ body {
 
 .dialog-team-container .icon-micro.cur {
   background-position: -22px -262px;
+}
+
+/* 图片预览样式修改 */
+.magnify-modal .magnify-stage {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-width: 0;
+}
+
+.magnify-modal .magnify-button {
+  opacity: 0.5;
+}
+
+.magnify-modal .magnify-button:hover {
+  opacity: 1;
+}
+
+.magnify-modal .magnify-button-close {
+  width: 80px;
+  height: 80px;
+}
+
+.magnify-modal .magnify-button-prev,
+.magnify-modal .magnify-button-next {
+  width: 80px;
+  height: 80px;
+  position: fixed;
+  top: 50%;
+  margin-top: -40px;
+}
+
+.magnify-modal .magnify-button-prev {
+  left: 20px;
+
+}
+
+.magnify-modal .magnify-button-next {
+  right: 20px;
+}
+
+.magnify-modal .magnify-button-prev:hover,
+.magnify-modal .magnify-button-next:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
