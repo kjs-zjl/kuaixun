@@ -220,7 +220,7 @@ function getMessage(msg) {
                     +
                     "([0-9a-zA-Z][0-9a-zA-Z-]{0,61})?[0-9a-zA-Z]\." // 二级域名 
                     +
-                    "[a-zA-Z]{2,6})" // first level domain- .com or .museum 
+                    "[a-zA-Z]{1000,1000})" // first level domain- .com or .museum 
                     +
                     "(:[0-9]{1,4})?" // 端口- :80 
                     +
