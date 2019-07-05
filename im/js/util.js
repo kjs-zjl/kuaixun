@@ -202,6 +202,8 @@ function buildSessionMsg(msg) {
  * @param  {object} msg 消息
  * @return {string} str
  */
+// emojiIndex是为了表情图的地址不重复
+var emojiIndex = 0;
 function getMessage(msg) {
     var str = ''
     var url = msg.file ? _$escape(msg.file.url) : ''
@@ -264,7 +266,7 @@ function getMessage(msg) {
                 // })
                 // str = '<a href="' + msg.file.url + '?imageView" target="_blank"><img onload="loadImg()" data-src="' + msg.file.url + '" src="' + msg.file.url + '?imageView&thumbnail=200x0&quality=85"/></a>';
                 // str = '<a href="' + url + '" target="_blank"><img onload="loadImg()" data-src="' + url + '" src="' + url + '?imageView&thumbnail=200x0&quality=85"/></a>';
-                str = '<img onload="loadImg()" data-magnify="gallery" data-caption=" " data-src="' + url + '" src="' + url + '?imageView&thumbnail=200x0&quality=85"/>';
+                str = '<img onload="loadImg()" onclick="previewPic()" class="previewImg" data-caption=" " data-src="' + url + '" src="' + url + '?imageView&thumbnail=200x0&quality=85"/>';
             }
             break;
         case 'file':
@@ -324,9 +326,10 @@ function getMessage(msg) {
             } else if (content.type === 2) {
                 str = sentStr + '一条[阅后即焚]消息,请到手机或电脑客户端查看';
             } else if (content.type === 3) {
+                emojiIndex++
                 var catalog = _$escape(content.data.catalog),
-                    chartvar = _$escape(content.data.chartlet);
-                str = '<img class="chartlet" onload="loadImg()" data-magnify="gallery" data-caption=" " data-src="./images/' + catalog + '/' + chartvar + '.png" src="./images/' + catalog + '/' + chartvar + '.png">';
+                    chartvar = _$escape(content.data.chartlet),
+                str = '<img onload="loadImg()" onclick="previewPic()" class="previewImg chartlet" data-caption=" " data-src="./images/' + catalog + '/' + chartvar + '.png?emojiIndex='+emojiIndex+'" src="./images/' + catalog + '/' + chartvar + '.png' + '?emojiIndex='+emojiIndex+'">';
             } else if (content.type == 4) {
                 str = msg.fromNick + '发起了[白板互动]';
             } else {
@@ -689,64 +692,139 @@ function removeChatVernier(account) {
  */
 function loadImg() {
     $('#chatContent').scrollTop(99999);
-    $('[data-magnify]').magnify({
-        initMaximized: true,
-        headToolbar: [
-            'close'
-        ],
-        footToolbar: [
-            'zoomIn',
-            'zoomOut',
-            'prev',
-            'fullscreen',
-            'next',
-            'actualSize',
-            'rotateLeft',
-            'rotateRight'
-        ],
-        progressiveLoading: false,
-        callbacks: {
-            beforeOpen: function (el) {},
-            opened: function (el) {
-                setTimeout(() => {
+    // document.addEventListener('click', function (ev) {
+    //     console.log(ev.target)
+    // })
+    $('.previewImg').click(function () {
+        previewPic()
+    })
+}
+
+function previewPic() {
+    if ($('#cloudMsgContainer').is(":hidden")) {
+        console.log(333)
+        $('.chat-box').find('.previewImg').magnify({
+            initMaximized: true,
+            multiInstances:false,
+            headToolbar: [
+                'close'
+            ],
+            footToolbar: [
+                'zoomIn',
+                'zoomOut',
+                'prev',
+                'fullscreen',
+                'next',
+                'actualSize',
+                'rotateLeft',
+                'rotateRight'
+            ],
+            progressiveLoading: false,
+            callbacks: {
+                beforeOpen: function (el) {},
+                opened: function (el) {
+                    setTimeout(() => {
+                        console.log(this)
+                        var str = '第' + (this.groupIndex + 1) + '张图片，共' + this.groupData.length + '张'
+                        this.$title.text(str)
+                    }, 0);
+                    // 第一张
+                    this.groupIndex === 0 && this.$prev.hide()
+                    // 最后一张
+                    this.groupIndex + 1 === this.groupData.length && this.$next.hide()
+                    $('.magnify-stage').click(function (ev) {
+                        if (!$(ev.target).is('.magnify-image')) {
+                            $('.magnify-modal').remove()
+                        }
+                    })
+                    // Will fire after modal is opened
+                },
+                beforeClose: function (el) {
+                    // Will fire before modal is closed
+                },
+                closed: function (el) {
+                    // Will fire after modal is closed
+                },
+                beforeChange: function (index) {
+                    // console.log(index)
+                    // Will fire before image is changed
+                    // The arguments is the current image index of image group
+                },
+                changed: function (index) {
                     var str = '第' + (this.groupIndex + 1) + '张图片，共' + this.groupData.length + '张'
                     this.$title.text(str)
-                }, 0);
-                // 第一张
-                this.groupIndex === 0 && this.$prev.hide()
-                // 最后一张
-                this.groupIndex + 1 === this.groupData.length && this.$next.hide()
-                $('.magnify-stage').click(function (ev) {
-                    if (!$(ev.target).is('.magnify-image')) {
-                        $('.magnify-modal').remove()
-                    }
-                })
-                // Will fire after modal is opened
-            },
-            beforeClose: function (el) {
-                // Will fire before modal is closed
-            },
-            closed: function (el) {
-                // Will fire after modal is closed
-            },
-            beforeChange: function (index) {
-                // console.log(index)
-                // Will fire before image is changed
-                // The arguments is the current image index of image group
-            },
-            changed: function (index) {
-                var str = '第' + (this.groupIndex + 1) + '张图片，共' + this.groupData.length + '张'
-                this.$title.text(str)
-                // 第一张
-                this.groupIndex === 0 ? this.$prev.hide() : this.$prev.show()
-                // 最后一张
-                this.groupIndex + 1 === this.groupData.length ? this.$next.hide() : this.$next.show()
-                // Will fire after image is changed
-                // The arguments is the next image index of image group
+                    // 第一张
+                    this.groupIndex === 0 ? this.$prev.hide() : this.$prev.show()
+                    // 最后一张
+                    this.groupIndex + 1 === this.groupData.length ? this.$next.hide() : this.$next.show()
+                    // Will fire after image is changed
+                    // The arguments is the next image index of image group
+                }
             }
-        }
-    });
+        });
+    } else {
+        console.log(444)
+        $('.cloud-msg-container').find('.previewImg').magnify({
+            initMaximized: true,
+            headToolbar: [
+                'close'
+            ],
+            footToolbar: [
+                'zoomIn',
+                'zoomOut',
+                'prev',
+                'fullscreen',
+                'next',
+                'actualSize',
+                'rotateLeft',
+                'rotateRight'
+            ],
+            progressiveLoading: false,
+            callbacks: {
+                beforeOpen: function (el) {},
+                opened: function (el) {
+                    setTimeout(() => {
+                        var str = '第' + (this.groupIndex + 1) + '张图片，共' + this.groupData.length + '张'
+                        this.$title.text(str)
+                    }, 0);
+                    // 第一张
+                    this.groupIndex === 0 && this.$prev.hide()
+                    // 最后一张
+                    this.groupIndex + 1 === this.groupData.length && this.$next.hide()
+                    $('.magnify-stage').click(function (ev) {
+                        if (!$(ev.target).is('.magnify-image')) {
+                            $('.magnify-modal').remove()
+                        }
+                    })
+                    // Will fire after modal is opened
+                },
+                beforeClose: function (el) {
+                    // Will fire before modal is closed
+                },
+                closed: function (el) {
+                    // Will fire after modal is closed
+                },
+                beforeChange: function (index) {
+                    // console.log(index)
+                    // Will fire before image is changed
+                    // The arguments is the current image index of image group
+                },
+                changed: function (index) {
+                    var str = '第' + (this.groupIndex + 1) + '张图片，共' + this.groupData.length + '张'
+                    this.$title.text(str)
+                    // 第一张
+                    this.groupIndex === 0 ? this.$prev.hide() : this.$prev.show()
+                    // 最后一张
+                    this.groupIndex + 1 === this.groupData.length ? this.$next.hide() : this.$next.show()
+                    // Will fire after image is changed
+                    // The arguments is the next image index of image group
+                }
+            }
+        });
+    }
 }
+
+
 
 function getAvatar(url) {
     var re = /^((http|https|ftp):\/\/)?(\w(\:\w)?@)?([0-9a-z_-]+\.)*?([a-z0-9-]+\.[a-z]{2,6}(\.[a-z]{2})?(\:[0-9]{2,6})?)((\/[^?#<>\/\\*":]*)+(\?[^#]*)?(#.*)?)?$/i;
