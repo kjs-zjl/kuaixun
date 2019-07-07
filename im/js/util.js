@@ -204,6 +204,7 @@ function buildSessionMsg(msg) {
  */
 // emojiIndex是为了表情图的地址不重复
 var emojiIndex = 0;
+
 function getMessage(msg) {
     var str = ''
     var url = msg.file ? _$escape(msg.file.url) : ''
@@ -329,7 +330,7 @@ function getMessage(msg) {
                 emojiIndex++
                 var catalog = _$escape(content.data.catalog),
                     chartvar = _$escape(content.data.chartlet),
-                str = '<img onload="loadImg()" onclick="previewPic()" class="previewImg chartlet" data-caption=" " data-src="./images/' + catalog + '/' + chartvar + '.png?emojiIndex='+emojiIndex+'" src="./images/' + catalog + '/' + chartvar + '.png' + '?emojiIndex='+emojiIndex+'">';
+                    str = '<img onload="loadImg()" onclick="previewPic()" class="previewImg chartlet" data-caption=" " data-src="./images/' + catalog + '/' + chartvar + '.png?emojiIndex=' + emojiIndex + '" src="./images/' + catalog + '/' + chartvar + '.png' + '?emojiIndex=' + emojiIndex + '">';
             } else if (content.type == 4) {
                 str = msg.fromNick + '发起了[白板互动]';
             } else {
@@ -705,7 +706,7 @@ function previewPic() {
         console.log(333)
         $('.chat-box').find('.previewImg').magnify({
             initMaximized: true,
-            multiInstances:false,
+            multiInstances: false,
             headToolbar: [
                 'close'
             ],
@@ -839,13 +840,42 @@ function getAvatar(url) {
 }
 
 //或者备注名或者昵称
-function getNick(account, cache) {
+function getNick(account, cache, teamId) {
     cache = cache || yunXin.cache;
     var nick = cache.getFriendAlias(account),
-        tmp = cache.getUserById(account);
-    nick = nick || (tmp && tmp.nick ? tmp.nick : account)
+        tmp = cache.getUserById(account),
+        teamMemberInfo;
+    if (teamId && !nick) {
+        console.log(teamId)
+        teamMemberInfo = cache.getTeamMemberInfo(account, teamId)
+    }
+    nick = nick || (teamMemberInfo && teamMemberInfo.nickInTeam ? teamMemberInfo.nickInTeam : (tmp && tmp.nick ? tmp.nick : account))
     return nick;
 }
+
+function openChatBoxAgain(account, scene, cache) {
+    if (cache.getTeamMembers(account)) {
+        return
+    }
+    setTimeout(() => {
+        yunXin.openChatBox(account, scene)
+        openChatBoxAgain(account, scene, cache)
+    }, 100)
+}
+
+function getTeamMemberInfoAgain(account, scene) {
+    if (scene === 'p2p') {
+        return
+    }
+    var cache = yunXin.cache
+    openChatBoxAgain(account, scene, cache)
+    // if (!cache.getTeamMembers(account)) {
+    //     setTimeout(function () {
+    //         yunXin.openChatBox(account, scene)
+    //     }, 80)
+    // }
+}
+
 //拿所有消息中涉及到的账号（为了正确显示昵称=。=）
 function getAllAccount(obj) {
     if (!obj) {
