@@ -853,7 +853,7 @@ function getNick(account, cache, teamId) {
 }
 
 function openChatBoxAgain(account, scene, cache) {
-    if (cache.getTeamMembers(account)) {
+    if (cache.getTeamMembers(account) || !cache.getTeamById(account)) {
         return
     }
     setTimeout(() => {
@@ -868,11 +868,6 @@ function getTeamMemberInfoAgain(account, scene) {
     }
     var cache = yunXin.cache
     openChatBoxAgain(account, scene, cache)
-    // if (!cache.getTeamMembers(account)) {
-    //     setTimeout(function () {
-    //         yunXin.openChatBox(account, scene)
-    //     }, 80)
-    // }
 }
 
 //拿所有消息中涉及到的账号（为了正确显示昵称=。=）
