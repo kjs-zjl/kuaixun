@@ -563,7 +563,7 @@ function transNotification(item) {
                 if (accounts[i] === userUID) {
                     member.push("你");
                 } else {
-                    member.push(getNick(accounts[i]));
+                    member.push(getNick(accounts[i], '', item.target));
                 }
 
             }
@@ -577,7 +577,7 @@ function transNotification(item) {
                 if (accounts[i] === userUID) {
                     member.push("你");
                 } else {
-                    member.push(getNick(accounts[i]));
+                    member.push(getNick(accounts[i], '', item.target));
                 }
             }
             member = member.join(",");
@@ -589,7 +589,7 @@ function transNotification(item) {
             return '管理员权限发生了变更'
             break
         case 'leaveTeam':
-            var member = (item.from === userUID) ? "你" : getNick(item.from);
+            var member = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
             str = member + "退出了" + tName;
             return str;
             break;
@@ -610,10 +610,10 @@ function transNotification(item) {
                         break;
                 }
             } else if (item.attach.team.name) {
-                var user = (item.from === userUID) ? "你" : getNick(item.from);
+                var user = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
                 str = user + "更新" + tName + "名称为" + item.attach.team.name;
             } else if (item.attach.team.intro) {
-                var user = (item.from === userUID) ? "你" : getNick(item.from);
+                var user = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
                 str = user + "更新群介绍为" + item.attach.team.intro;
             } else if (item.attach.team.inviteMode) {
                 str = item.attach.team.inviteMode === 'manager' ? '邀请他人权限为管理员' : '邀请他人权限为所有人';
@@ -622,7 +622,7 @@ function transNotification(item) {
             } else if (item.attach.team.updateTeamMode) {
                 str = item.attach.team.updateTeamMode === 'manager' ? '群资料修改权限为管理员' : '群资料修改权限为所有人';
             } else if (item.attach.team.avatar) {
-                var user = (item.from === userUID) ? "你" : getNick(item.from);
+                var user = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
                 str = user + "更改了群头像";
             } else {
                 str = '更新群消息';
@@ -633,11 +633,11 @@ function transNotification(item) {
             var member,
                 admin;
             if (item.from === item.attach.account) {
-                member = (item.from === userUID) ? "你" : getNick(item.from);
+                member = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
                 str = member ? member : item.from + "加入了群";
             } else {
-                admin = (item.attach.account === userUID) ? "你" : getNick(item.attach.account);
-                member = (item.from === userUID) ? "你" : getNick(item.from);
+                admin = (item.attach.account === userUID) ? "你" : getNick(item.attach.account, '', item.target);
+                member = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
                 str = member + '接受了' + admin + "的入群邀请";
             }
             return str;
@@ -646,17 +646,17 @@ function transNotification(item) {
             var member,
                 admin;
             if (item.from === item.attach.account) {
-                member = (item.from === userUID) ? "你" : getNick(item.from);
+                member = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
                 str = member + "加入了群";
             } else {
-                member = (item.attach.account === userUID) ? "你" : getNick(item.attach.account);
-                admin = (item.from === userUID) ? "你" : getNick(item.from);
+                member = (item.attach.account === userUID) ? "你" : getNick(item.attach.account, '', item.target);
+                admin = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
                 str = admin + '通过了' + member + "的入群申请";
             }
             return str;
             break;
         case 'dismissTeam':
-            var member = (item.from === userUID) ? "你" : getNick(item.from);
+            var member = (item.from === userUID) ? "你" : getNick(item.from, '', item.target);
             str = member + "解散了群";
             return str;
             break;
@@ -666,7 +666,7 @@ function transNotification(item) {
             if (account === userUID) {
                 name = '你';
             } else {
-                name = getNick(account);
+                name = getNick(account, '', item.target);
             }
             str = name + '被' + ((item.from === userUID) ? '你' : '管理员') + (item.attach.mute ? '禁言' : '解除禁言');
             return str;
@@ -846,7 +846,6 @@ function getNick(account, cache, teamId) {
         tmp = cache.getUserById(account),
         teamMemberInfo;
     if (teamId && !nick) {
-        console.log(teamId)
         teamMemberInfo = cache.getTeamMemberInfo(account, teamId)
     }
     nick = nick || (teamMemberInfo && teamMemberInfo.nickInTeam ? teamMemberInfo.nickInTeam : (tmp && tmp.nick ? tmp.nick : account))
