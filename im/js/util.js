@@ -240,14 +240,14 @@ function getMessage(msg) {
             }
             str = _$escape(msg.text)
             if (IsURL(str)) {
-                str = `<a href=${str} target='_blank'>${str}</a>`
+                str = `<a class='outside-link' href=${str} target='_blank'>${str}</a>`
             } else {
                 var re = /((((http:|https:)\/\/[\w.\/]+)(?![^<]+>)))/gi; // 识别链接
-                str = str.replace(re, "<a href='$1' target='_blank'>$1</a>");
+                str = str.replace(re, "<a class='outside-link' href='$1' target='_blank'>$1</a>");
             }
             // var re = /(http:\/\/[\w.\/]+)(?![^<]+>)/gi; // 识别链接
             // str = _$escape(msg.text);
-            // str = str.replace(re, "<a href='$1' target='_blank'>$1</a>");
+            // str = str.replace(re, "<a class='outside-link' href='$1' target='_blank'>$1</a>");
 
             str = buildEmoji(str);
             str = "<div class='f-maxWid'>" + str + "</div>"
