@@ -3622,3 +3622,61 @@ body {
 .magnify-modal .magnify-button-next:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+
+/* 下载按钮 */
+#btnDownload {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  background-color: #000;
+  padding: 10px 0 10px 17px;
+  border-radius: 6px;
+  text-decoration: none;
+  width: 212px;
+  color: #fff;
+  position: absolute;
+}
+
+#btnDownload:active {
+  opacity: 0.8;
+}
+
+#btnDownload.download-button-windows {
+  background-color: #07c160;
+}
+
+#btnDownload.download-button-appstore {
+  top: 85px;
+}
+
+#btnDownload .icon-download {
+  float: left;
+  vertical-align: middle;
+  margin-right: 10px;
+  width: 37px;
+  height: 46px;
+  /* margin-top: 6px; */
+}
+
+#btnDownload .icon-windows {
+  background: url('../images/windows.png') no-repeat center center;
+  background-size: cover;
+}
+
+#btnDownload .icon-apple {
+  background: url('../images/mac.png') no-repeat center center;
+  background-size: cover;
+
+}
+
+#btnDownload .download-text-area {}
+
+#btnDownload .download-text-title {
+  font-size: 22px;
+}
+
+#btnDownload .download-text-desc {
+  margin-top: 10px;
+  font-size: 14px;
+}
