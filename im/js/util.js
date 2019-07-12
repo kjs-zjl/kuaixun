@@ -231,8 +231,8 @@ function getMessage(msg) {
                     +
                     "(/[0-9a-zA-Z_!~*'().;?:@&=+$,%#-]+)+/?)$";
                 var re = new RegExp(strRegex);
-                //re.test()
-                if (re.test(str_url)) {
+                var re2 = /^(www)(\.[\w\d]+)+(\.(\w){2,})$/
+                if (re.test(str_url) || re2.test(str_url)) {
                     return (true);
                 } else {
                     return (false);
