@@ -652,9 +652,9 @@
 	<div id="mask" class="mask hide"></div>
 	<script>
 		// 生产环境清除console.log()
-		if (true) {
-			// console.log = () => {}
-			// console.info = () => {}
+		if (location.hostname.indexOf('.com') !== -1) {
+			console.log = () => {}
+			console.info = () => {}
 		}
 	</script>
 	<script>
