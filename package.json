@@ -1,5 +1,5 @@
 {
-  "name": "NIM_Web_Demo",
+  "name": "kuaixun-web",
   "scripts": {
     "start": "node app.js",
     "https-server": "http-server --ssl --key ./ssh/key.pem --cert ./ssh/cert.pem --p 9091",
